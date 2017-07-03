@@ -1,6 +1,11 @@
-package spring.security.oauth2.instagram
+package grails.plugin.springsecurity.oauth2.instagram
 
+import grails.plugin.springsecurity.ReflectionUtils
+import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.oauth2.SpringSecurityOauth2BaseService
+import grails.plugin.springsecurity.oauth2.exception.OAuth2Exception
 import grails.plugins.*
+import org.slf4j.LoggerFactory
 
 class SpringSecurityOauth2InstagramGrailsPlugin extends Plugin {
 
@@ -41,7 +46,34 @@ Brief summary/description of the plugin.
 //    def scm = [ url: "http://svn.codehaus.org/grails-plugins/" ]
 
     Closure doWithSpring() { {->
-            // TODO Implement runtime spring config (optional)
+        ReflectionUtils.application = grailsApplication
+        if (grailsApplication.warDeployed) {
+            SpringSecurityUtils.resetSecurityConfig()
+        }
+        SpringSecurityUtils.application = grailsApplication
+
+        // Check if there is an SpringSecurity configuration
+        def coreConf = SpringSecurityUtils.securityConfig
+        boolean printStatusMessages = (coreConf.printStatusMessages instanceof Boolean) ? coreConf.printStatusMessages : true
+        if (!coreConf || !coreConf.active) {
+            if (printStatusMessages) {
+                println("ERROR: There is no SpringSecurity configuration or SpringSecurity is disabled")
+                println("ERROR: Stopping configuration of SpringSecurity Oauth2")
+            }
+            return
+        }
+
+        if (!hasProperty('log')) {
+            log = LoggerFactory.getLogger(SpringSecurityOauth2InstagramGrailsPlugin)
+        }
+
+        if (printStatusMessages) {
+            println("Configuring Spring Security OAuth2 facebook plugin...")
+        }
+        SpringSecurityUtils.loadSecondaryConfig('DefaultOAuth2FacebookConfig')
+        if (printStatusMessages) {
+            println("... finished configuring Spring Security Instagram\n")
+        }
         }
     }
 
@@ -49,8 +81,17 @@ Brief summary/description of the plugin.
         // TODO Implement registering dynamic methods to classes (optional)
     }
 
+    @Override
     void doWithApplicationContext() {
-        // TODO Implement post initialization spring config (optional)
+        log.trace("doWithApplicationContext")
+        def SpringSecurityOauth2BaseService oAuth2BaseService = grailsApplication.mainContext.getBean('springSecurityOauth2BaseService') as SpringSecurityOauth2BaseService
+        def InstagramOAuth2ProviderService instagramOAuth2Service = grailsApplication.mainContext.getBean('facebookOAuth2Service') as InstagramOAuth2ProviderService
+        try {
+            oAuth2BaseService.registerProvider(instagramOAuth2Service)
+        } catch (OAuth2Exception exception) {
+            log.error("There was an oAuth2Exception", exception)
+            log.error("OAuth2 Google not loaded")
+        }
     }
 
     void onChange(Map<String, Object> event) {
