@@ -9,8 +9,8 @@ buildscript {
     }
 }
 
-version "0.1"
-group "spring.security.oauth2.instagram"
+version "0.2.2"
+group "org.grails.plugins"
 
 apply plugin:"eclipse"
 apply plugin:"idea"

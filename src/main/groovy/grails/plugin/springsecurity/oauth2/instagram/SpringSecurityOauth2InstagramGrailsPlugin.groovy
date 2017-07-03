@@ -44,6 +44,7 @@ Brief summary/description of the plugin.
 
     // Online location of the plugin's browseable source code.
 //    def scm = [ url: "http://svn.codehaus.org/grails-plugins/" ]
+    def log
 
     Closure doWithSpring() { {->
         ReflectionUtils.application = grailsApplication
@@ -68,9 +69,9 @@ Brief summary/description of the plugin.
         }
 
         if (printStatusMessages) {
-            println("Configuring Spring Security OAuth2 facebook plugin...")
+            println("Configuring Spring Security OAuth2 instagram plugin...")
         }
-        SpringSecurityUtils.loadSecondaryConfig('DefaultOAuth2FacebookConfig')
+        SpringSecurityUtils.loadSecondaryConfig('DefaultOAuth2InstagramConfig')
         if (printStatusMessages) {
             println("... finished configuring Spring Security Instagram\n")
         }
@@ -85,7 +86,7 @@ Brief summary/description of the plugin.
     void doWithApplicationContext() {
         log.trace("doWithApplicationContext")
         def SpringSecurityOauth2BaseService oAuth2BaseService = grailsApplication.mainContext.getBean('springSecurityOauth2BaseService') as SpringSecurityOauth2BaseService
-        def InstagramOAuth2ProviderService instagramOAuth2Service = grailsApplication.mainContext.getBean('facebookOAuth2Service') as InstagramOAuth2ProviderService
+        def InstagramOAuth2ProviderService instagramOAuth2Service = grailsApplication.mainContext.getBean('InstagramOAuth2ProviderService') as InstagramOAuth2ProviderService
         try {
             oAuth2BaseService.registerProvider(instagramOAuth2Service)
         } catch (OAuth2Exception exception) {
