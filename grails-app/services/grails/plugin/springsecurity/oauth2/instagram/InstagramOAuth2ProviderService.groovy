@@ -42,7 +42,7 @@ class InstagramOAuth2ProviderService extends OAuth2AbstractProviderService {
         def response = getResponse(accessToken)
         try {
             println "JSON response body: " + accessToken.rawResponse
-            user = JSON.parse(response.body)
+            user = JSON.parse(response.body)?.data
             println "Usuário: $user"
             println "Response: $response.body"
         } catch (Exception exception) {
