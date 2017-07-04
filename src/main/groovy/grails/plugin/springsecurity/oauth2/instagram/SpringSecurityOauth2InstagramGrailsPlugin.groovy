@@ -86,7 +86,7 @@ Brief summary/description of the plugin.
     void doWithApplicationContext() {
         log.trace("doWithApplicationContext")
         def SpringSecurityOauth2BaseService oAuth2BaseService = grailsApplication.mainContext.getBean('springSecurityOauth2BaseService') as SpringSecurityOauth2BaseService
-        def InstagramOAuth2ProviderService instagramOAuth2Service = grailsApplication.mainContext.getBean('InstagramOAuth2ProviderService') as InstagramOAuth2ProviderService
+        def InstagramOAuth2ProviderService instagramOAuth2Service = grailsApplication.mainContext.getBean('instagramOAuth2ProviderService') as InstagramOAuth2ProviderService
         try {
             oAuth2BaseService.registerProvider(instagramOAuth2Service)
         } catch (OAuth2Exception exception) {

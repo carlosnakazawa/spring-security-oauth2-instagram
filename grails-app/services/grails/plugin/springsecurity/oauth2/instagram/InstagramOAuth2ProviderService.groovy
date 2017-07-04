@@ -28,12 +28,12 @@ class InstagramOAuth2ProviderService extends OAuth2AbstractProviderService {
 
     @Override
     String getScopes() {
-        return "email"
+        return "basic"
     }
 
     @Override
     String getScopeSeparator() {
-        return ","
+        return "+"
     }
 
     @Override
@@ -41,16 +41,18 @@ class InstagramOAuth2ProviderService extends OAuth2AbstractProviderService {
         def user
         def response = getResponse(accessToken)
         try {
-            log.debug("JSON response body: " + accessToken.rawResponse)
+            println "JSON response body: " + accessToken.rawResponse
             user = JSON.parse(response.body)
+            println "Usuário: $user"
+            println "Response: $response.body"
         } catch (Exception exception) {
             log.error("Error parsing response from " + getProviderID() + ". Response:\n" + response.body)
             throw new OAuth2Exception("Error parsing response from " + getProviderID(), exception)
         }
-        if (!user?.email) {
+        if (!user?.username) {
             log.error("No user email from " + getProviderID() + ". Response was:\n" + response.body)
             throw new OAuth2Exception("No user email from " + getProviderID())
         }
-        new InstagramOauth2SpringToken(accessToken, user?.email, providerID)
+        new InstagramOauth2SpringToken(accessToken, user?.username, providerID)
     }
 }
